@@ -26,6 +26,10 @@ public class DriverOp extends LinearOpMode {
     private Servo left = null;
     private Servo right = null;
     private Servo release = null;
+    private Servo end_1 = null;
+    private Servo end_2 = null;
+    private Servo up_and_over = null;
+    
 
     public void runOpMode() {
 
@@ -44,6 +48,9 @@ public class DriverOp extends LinearOpMode {
         left = hardwareMap.get(Servo.class, "left_hand");
         right = hardwareMap.get(Servo.class, "right_hand");
         release = hardwareMap.get(Servo.class, "release_lift");
+        end_1 = hardwareMap.get(Servo.class, "endgame_1");
+        end_2 = hardwareMap.get(Servo.class, "endgame_2");
+        up_and_over = hardwareMap.get(Servo.class, "u_a_o");
         rightDriveFront.setDirection(DcMotor.Direction.FORWARD);
         rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
         leftDriveFront.setDirection(DcMotor.Direction.REVERSE);
@@ -69,6 +76,7 @@ public class DriverOp extends LinearOpMode {
             double drive = -gamepad1.left_stick_y;
             double turn  =  gamepad1.right_stick_x;
             double lift = -gamepad2.left_stick_y;
+            boolean isOpen = false;
             //re-initialize power vars
             leftPowerFront = Range.clip(-gamepad1.left_stick_y, -1.0, 1.0);
             leftPowerBack = Range.clip(-gamepad1.left_stick_y, -1.0, 1.0);
@@ -95,7 +103,24 @@ public class DriverOp extends LinearOpMode {
             }
             if (gamepad2.x) {
                 extenderPower = 1.0;
-                sleep();
+                sleep(5000);
+            }
+            if (gamepad2.b) {
+            	if (isOpen) {
+            		//close
+            		end_1.setPosition(0.5);
+            		end_2.setPosition(1);
+            	} else if (!isOpen) {
+            		//open
+            		end_1.setPosition(1);
+            		end_2.setPosition(0.5);
+            	}
+            }
+            if (gamepad1.a) {
+            	up_and_over.setPosition(1);
+            }
+            if (gamepad1.b) {
+            	up_and_over.setPosition(0.5);
             }
             //update telemetry
             telemetry.addData("Status", "Run Time: " + runtime.toString());
